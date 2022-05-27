@@ -56,7 +56,7 @@ premain:
 
 	mret
 
-main:
+entry:
 	# START UART WRITE
 	# allow divisor write
 	li t1, UART_LCR
@@ -83,14 +83,13 @@ uart_notready:
 	li t2, 0
 	bne t1, t2, uart_notready
 
-	# TODO: everything goes here
+	call main
 
 	# if we get here, something has gone horribly wrong: panic accordingly
-	li a0, 'U'
-	li a1, 'N'
-	li a2, 'R'
-	li a3, 'C'
-	li a4, 'H'
+	li a0, 'B'
+	li a1, 'A'
+	li a2, 'D'
+
 .globl panic
 panic:
 	li t0, UART_THR
@@ -115,6 +114,12 @@ panic:
 	sb a4, 0(t0)
 inf:
 	j inf
+
+.globl uart_putc
+uart_putc:
+	li t0, UART_THR
+	sb a0, 0(t0)
+	ret
 
 trap:
 	nop

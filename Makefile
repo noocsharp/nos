@@ -1,18 +1,24 @@
 .PHONY: run clean
 
 TARGET = riscv64-linux-musl
+CC = $(TARGET)-cc
 AS = $(TARGET)-as
 LD = $(TARGET)-ld
 OBJCOPY = $(TARGET)-objcopy
 
+OBJS = boot/start.o boot/main.o
+
 boot.img: boot.elf
 	$(OBJCOPY) $< -I binary $@
 
-boot.elf: boot/start.o boot.ld
-	$(LD) -Tboot.ld $< -o $@
+boot.elf: $(OBJS) boot.ld
+	$(LD) -Tboot.ld $(OBJS) -o $@
 
 boot/start.o: boot/start.s
 	$(AS) $< -o $@
+
+boot/main.o: boot/main.c
+	$(CC) -c $< -o $@
 
 prog.img: prog.nc
 	cp prog.nc prog.img
