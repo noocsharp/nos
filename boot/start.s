@@ -10,6 +10,8 @@
 .set UART_LCR_UNDLAB, 0x0B
 .set UART_LSR_RI, 0x40
 
+.set PFLASH1_ADDR, 0x22000000
+
 .globl _start
 _start:
 	# only run boot code on 0th hart
@@ -74,6 +76,9 @@ main:
 	li t2, UART_LCR_UNDLAB
 	sb t2, 0(t1)
 
+	li t4, 1
+	li t3, PFLASH1_ADDR
+
 uart_notready:
 	la t1, UART_LSR
 	li t2, UART_LSR_RI
@@ -81,13 +86,13 @@ uart_notready:
 	li t2, 0
 	bne t1, t2, uart_notready
 
+write_loop:
 	li t1, UART_THR
-	li t2, 0x61
+	lb t2, 0(t3)
+	beq t2, x0, wait
 	sb t2, 0(t1)
-
-inf:
-	wfi
-	j inf
+	add t3, t4, t3
+	j write_loop
 
 trap:
 	nop
