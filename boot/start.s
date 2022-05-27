@@ -76,9 +76,6 @@ main:
 	li t2, UART_LCR_UNDLAB
 	sb t2, 0(t1)
 
-	li t4, 1
-	li t3, PFLASH1_ADDR
-
 uart_notready:
 	la t1, UART_LSR
 	li t2, UART_LSR_RI
@@ -86,13 +83,38 @@ uart_notready:
 	li t2, 0
 	bne t1, t2, uart_notready
 
-write_loop:
-	li t1, UART_THR
-	lb t2, 0(t3)
-	beq t2, x0, wait
-	sb t2, 0(t1)
-	add t3, t4, t3
-	j write_loop
+	# TODO: everything goes here
+
+	# if we get here, something has gone horribly wrong: panic accordingly
+	li a0, 'U'
+	li a1, 'N'
+	li a2, 'R'
+	li a3, 'C'
+	li a4, 'H'
+.globl panic
+panic:
+	li t0, UART_THR
+	li t1, 'P'
+	sb t1, 0(t0)
+	li t1, 'A'
+	sb t1, 0(t0)
+	li t1, 'N'
+	sb t1, 0(t0)
+	li t1, 'I'
+	sb t1, 0(t0)
+	li t1, 'C'
+	sb t1, 0(t0)
+	li t1, ':'
+	sb t1, 0(t0)
+	li t1, ' '
+	sb t1, 0(t0)
+	sb a0, 0(t0)
+	sb a1, 0(t0)
+	sb a2, 0(t0)
+	sb a3, 0(t0)
+	sb a4, 0(t0)
+inf:
+	j inf
 
 trap:
 	nop
