@@ -1,4 +1,4 @@
-.PHONY: run
+.PHONY: run clean
 
 TARGET = riscv64-linux-musl
 AS = $(TARGET)-as
@@ -20,3 +20,6 @@ prog.img: prog.nc
 
 run: prog.img boot.img
 	qemu-system-riscv64 -M virt -bios boot.img -serial stdio -display none -drive if=pflash,file=prog.img,format=raw,index=1
+
+clean:
+	rm *.img boot/*.o *.elf
